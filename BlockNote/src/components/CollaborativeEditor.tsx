@@ -43,6 +43,20 @@ type EditorProps = {
   provider: any;
 };
 
+async function uploadFile(file: File) {
+  const body = new FormData();
+  body.append("file", file);
+
+  const ret = await fetch("https://tmpfiles.org/api/v1/upload", {
+    method: "POST",
+    body: body,
+  });
+  return (await ret.json()).data.url.replace(
+    "tmpfiles.org/",
+    "tmpfiles.org/dl/"
+  );
+}
+
 function BlockNote({ doc, provider }: EditorProps) {
   // Get user info from Liveblocks authentication endpoint
   const userInfo = useSelf((me) => me.info);
@@ -60,6 +74,7 @@ function BlockNote({ doc, provider }: EditorProps) {
         color: userInfo.color,
       },
     },
+    uploadFile,
   });
 
   const [theme, setTheme] = useState<"light" | "dark">("light");
